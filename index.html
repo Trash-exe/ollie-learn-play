@@ -1,0 +1,165 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Learn & Play</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:Fredoka,'Baloo 2','Comic Sans MS',system-ui,sans-serif;background:linear-gradient(160deg,#fff6d6,#ffe0f0 50%,#d9f2ff);min-height:100vh;color:#33325a;user-select:none}
+header{display:flex;align-items:center;gap:12px;padding:14px 20px}
+header h1{margin:0;font-size:34px;color:#ff6b6b;text-shadow:2px 2px 0 #ffd93d}
+.mascot{font-size:52px;animation:bob 2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px) rotate(-6deg)}}
+.stars{margin-left:auto;background:#fff;border-radius:30px;padding:8px 18px;font-size:26px;font-weight:700;box-shadow:0 4px 0 #f3c623}
+.gear{border:none;background:none;font-size:20px;opacity:.35;cursor:pointer;padding:10px}
+.tabs{display:flex;gap:14px;padding:0 20px 10px;flex-wrap:wrap}
+.tab{border:none;border-radius:24px;padding:14px 26px;font:700 24px Fredoka,sans-serif;background:#fff;color:#33325a;box-shadow:0 5px 0 #c9c3e6;cursor:pointer;transition:transform .15s}
+.tab.on{background:#6c5ce7;color:#fff;box-shadow:0 5px 0 #4834b0}
+.tab:active,.tile:active,.lvl:active,.choice:active{transform:scale(.94)}
+.cat{margin:14px 20px 0}
+.cat h2{font-size:28px;margin:8px 0;display:flex;align-items:center;gap:10px}
+.cat h2 span{font-size:40px}
+.row{display:flex;gap:18px;overflow-x:auto;padding:6px 4px 18px;scroll-snap-type:x mandatory}
+.tile{flex:0 0 260px;scroll-snap-align:start;background:#fff;border-radius:26px;overflow:hidden;box-shadow:0 6px 0 rgba(0,0,0,.08);cursor:pointer;transition:transform .15s;border:5px solid var(--c)}
+.tile img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.tile p{margin:0;padding:8px 12px 12px;font-size:16px;font-weight:600;height:56px;overflow:hidden}
+.path{display:flex;flex-wrap:wrap;gap:22px;justify-content:center;padding:20px}
+.lvl{width:180px;height:180px;border-radius:50%;border:none;font:700 22px Fredoka,sans-serif;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 0 rgba(0,0,0,.18);transition:transform .15s;padding:10px}
+.lvl b{font-size:48px}.lvl small{font-size:15px;font-weight:600}
+.lvl.lock{background:#cfcfe0!important;color:#888;cursor:default}
+.lvl.cur{animation:pulse 1.4s infinite}
+@keyframes pulse{50%{transform:scale(1.07)}}
+#player{position:fixed;inset:0;background:#1e1b3a;display:none;flex-direction:column;z-index:10}
+#player .bar{display:flex;align-items:center;gap:14px;padding:10px}
+.big{border:none;border-radius:22px;padding:14px 30px;font:700 26px Fredoka,sans-serif;background:#ffd93d;color:#33325a;box-shadow:0 5px 0 #c9a400;cursor:pointer}
+#pwrap{position:relative;flex:1;margin:0 10px 10px}
+#yt,#pwrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:16px}
+.shield{position:absolute;left:0;right:0;top:0;height:70px;z-index:2}
+.shield.br{top:auto;bottom:0;left:auto;right:0;width:340px;height:56px}.shield.bl{top:auto;bottom:0;width:90px;height:56px}
+.screen{position:fixed;inset:0;background:inherit;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:20;background:linear-gradient(160deg,#fff6d6,#d9f2ff);padding:20px}
+.screen h2{font-size:42px;margin:10px}
+.choices{display:flex;gap:22px;flex-wrap:wrap;justify-content:center}
+.choice{width:170px;height:170px;border-radius:30px;border:6px solid #6c5ce7;background:#fff;font:700 64px Fredoka,sans-serif;cursor:pointer;transition:transform .15s;color:#33325a}
+.shake{animation:sh .4s}@keyframes sh{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.confetti{position:fixed;top:-40px;font-size:34px;animation:fall 2.2s linear forwards;z-index:30;pointer-events:none}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+#parent{position:fixed;inset:0;background:#f5f4ff;display:none;z-index:40;overflow:auto;padding:20px;font-size:17px}
+#parent h2{color:#6c5ce7;margin:18px 0 8px}
+.card{background:#fff;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 3px 10px rgba(0,0,0,.06)}
+.pbtn{border:none;border-radius:12px;padding:9px 16px;font:600 16px Fredoka,sans-serif;background:#6c5ce7;color:#fff;cursor:pointer;margin:3px}
+.pbtn.red{background:#ff6b6b}.pbtn.gray{background:#aaa}
+input{font:16px Fredoka,sans-serif;padding:9px;border-radius:10px;border:2px solid #ccc}
+.vl{display:flex;align-items:center;gap:10px;padding:4px 0;border-bottom:1px solid #eee}.vl img{width:80px;border-radius:6px}.vl span{flex:1}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{background:linear-gradient(135deg,#a29bfe,#6c5ce7);color:#fff;border-radius:16px;padding:14px;text-align:center}.stat b{font-size:32px;display:block}
+.chart{display:flex;align-items:flex-end;gap:8px;height:150px;border-bottom:2px solid #ddd;padding-top:10px}
+.chart div{flex:1;background:#55efc4;border-radius:8px 8px 0 0;position:relative;min-height:2px}
+.chart div i{position:absolute;bottom:-22px;left:0;right:0;text-align:center;font-size:12px;font-style:normal}
+.chart div em{position:absolute;top:-20px;left:0;right:0;text-align:center;font-size:12px;font-style:normal}
+table{width:100%;border-collapse:collapse}td,th{padding:5px;border-bottom:1px solid #eee;text-align:left;font-size:15px}
+.pinpad{display:grid;grid-template-columns:repeat(3,80px);gap:12px}.pinpad button{height:70px;font:700 28px Fredoka,sans-serif;border-radius:18px;border:none;background:#fff;box-shadow:0 4px 0 #c9c3e6}
+</style></head><body>
+<header><div class="mascot">🦉</div><h1>Ollie's Learn & Play</h1><div class="stars">⭐ <span id="starCount">0</span></div><button class="gear" onclick="askPin()" aria-label="Parents">⚙️ Parents</button></header>
+<div class="tabs"><button class="tab on" id="tPath" onclick="show('path')">🗺️ Learning Path</button><button class="tab" id="tFree" onclick="show('free')">🎈 Free Play</button></div>
+<div id="fileWarn" style="display:none;margin:0 20px;background:#fff3cd;border-radius:14px;padding:10px 16px;font-size:16px">⚠️ Grown-ups: YouTube blocks videos when this file is opened directly (file://). Host it on a web address (e.g. GitHub Pages, Netlify Drop) or run a local server so videos play.</div><main id="main"></main>
+
+<div id="player"><div class="bar"><button class="big" onclick="closePlayer()">⬅ Back</button><div id="ptitle" style="color:#fff;font-size:20px;flex:1"></div></div>
+<div id="pwrap"><div id="yt"></div><div class="shield"></div><div class="shield br"></div><div class="shield bl"></div></div></div>
+<div class="screen" id="quiz"></div>
+<div class="screen" id="done"><div style="font-size:120px">😴🌙</div><h2>All done for today!</h2><p style="font-size:26px">Great learning! Ollie says see you tomorrow! 🦉</p></div>
+<div class="screen" id="pin"><h2>👨‍👩‍👦 Grown-ups only</h2><p style="font-size:22px">Enter PIN</p><div id="pinDots" style="font-size:40px;letter-spacing:12px;height:50px"></div><div class="pinpad" id="pinpad"></div><br><button class="big" onclick="hide('pin')">Cancel</button></div>
+<div id="parent"></div>
+
+<script>
+const SEED=[{"id": "nkYJhtF3trc", "t": "Struggling with Math? Start Here! | Learn to Count for Kids | Number Cartoon | Numberblocks", "ch": "Numberblocks", "cat": "math"}, {"id": "bvdQr1rUPZI", "t": "My First Numbers | 12345 | Learn Maths for Kids | Numberblocks", "ch": "Numberblocks", "cat": "math"}, {"id": "lRe36GiOEdU", "t": "Octoblock 8 Saves the Day! | Learn to Count for Kids Compilation | Number Cartoon | Numberblocks", "ch": "Numberblocks", "cat": "math"}, {"id": "OdNkLG3k33s", "t": "I’m a Number Detective | Learn to Count | Numberblocks", "ch": "Numberblocks", "cat": "math"}, {"id": "uC2CoaA1plM", "t": "Number Songs for Kids!  | Learn to Count for Kids Compilation | Numberblocks", "ch": "Numberblocks", "cat": "math"}, {"id": "XwviRUy-JoM", "t": "Numberblock Nine is Amazing! | Learn to Count for Kids Compilation | Number Cartoon | Numberblocks", "ch": "Numberblocks", "cat": "math"}, {"id": "-dKDf6im0C4", "t": "The Rise of Infinaughty! Full 25-Minute Movie (All 5 Episodes) | Numberblocks S9", "ch": "Numberblocks", "cat": "math"}, {"id": "5fD79cjS9XA", "t": "The Rise of Infinaughty - PART 5: Everybody Counts | Numberblocks (S9 E5)", "ch": "Numberblocks", "cat": "math"}, {"id": "asNWTdlBG14", "t": "I’m a Top Shopkeeper | Learn to Count | Numberblocks", "ch": "Numberblocks", "cat": "math"}, {"id": "yF3VniaFxNU", "t": "The Rise of Infinaughty - PART 4: The Rectangular Wreck | Numberblocks (S9 E4)", "ch": "Numberblocks", "cat": "math"}, {"id": "rQva7iOnkkM", "t": "The Rise of Infinaughty - PART 3: Trying Times | Numberblocks (S9 E3)", "ch": "Numberblocks", "cat": "math"}, {"id": "_tICzC_RLo8", "t": "Meet Numberblock 47 | BRAND NEW CHARACTER REVEAL | Learn to Count | Numberblocks", "ch": "Numberblocks", "cat": "math"}, {"id": "7owPTDsB0Jw", "t": "Spelling Made Easy - Songs for Kids | Learn to Read and Spell for Kids Compilation | Alphablocks", "ch": "Alphablocks", "cat": "letters"}, {"id": "nuD1XSIDcO4", "t": "Alphablock M and the Mole | Learn to Read and Spell for Kids Compilation | Alphablocks", "ch": "Alphablocks", "cat": "letters"}, {"id": "X9N_DVNFwIY", "t": "Baby's First Alphabet | Learn to Read and Spell for Kids Compilation | Alphablocks", "ch": "Alphablocks", "cat": "letters"}, {"id": "DzYwsxT-MCY", "t": "Classroom Calm with the Alphablocks | Learn to Read and Spell for Kids Compilation | Alphablocks", "ch": "Alphablocks", "cat": "letters"}, {"id": "1gJpAU6MufY", "t": "Alphablocks Telly | Learn to Read and Spell for Kids Compilation | Alphablocks", "ch": "Alphablocks", "cat": "letters"}, {"id": "SbwgW4cHmqY", "t": "Long Vowels OU OY Y | Lesson Thirty - Phonics Made Easy | Alphablocks", "ch": "Alphablocks", "cat": "letters"}, {"id": "vN5FR7cPuFc", "t": "Night Time Adventures in Alphaland | Learn to Read and Spell for Kids Compilation | Alphablocks", "ch": "Alphablocks", "cat": "letters"}, {"id": "Wq5F4SDns4s", "t": "Pip, Fred, and Other Friends | Learn to Read and Spell for Kids Compilation | Alphablocks", "ch": "Alphablocks", "cat": "letters"}, {"id": "Cm-of9p2-3I", "t": "Long Vowels AU AW IR | Lesson Thirty - Phonics Made Easy | Alphablocks", "ch": "Alphablocks", "cat": "letters"}, {"id": "7TEOsvKTrS4", "t": "Little Red N Goes on an Adventure | Learn to Read and Spell for Kids Compilation | Alphablocks", "ch": "Alphablocks", "cat": "letters"}, {"id": "CT1uR8xbXaA", "t": "How To Structure Sentences | Learn to Read and Spell for Kids Compilation | Alphablocks", "ch": "Alphablocks", "cat": "letters"}, {"id": "6bX8xYMerts", "t": "Long Vowels EW U_E UE | Lesson Twenty Nine - Phonics Made Easy | Alphablocks", "ch": "Alphablocks", "cat": "letters"}, {"id": "hWh59GPbt3A", "t": "The Best Reading Songs from The Band!  | Learn to Read and Spell for Kids Compilation | Alphablocks", "ch": "Alphablocks", "cat": "letters"}, {"id": "5a5QLfcFTeA", "t": "Time to Read! - Go All In 📖🌟 | Alphablocks Phonics Song for Kids | Alphablocks", "ch": "Alphablocks", "cat": "letters"}, {"id": "LuJe0ad1Ygk", "t": "When We Play Hockey 🏒 | Super Simple Songs & ‪@NHL Hockey Song for Kids", "ch": "Super Simple Songs", "cat": "songs"}, {"id": "uBweptmCYZg", "t": "Our Listening Ears 👂 | Animal Sounds & Guessing Game for Kids! | Super Simple Songs", "ch": "Super Simple Songs", "cat": "songs"}, {"id": "2QtoaV22rpY", "t": "Top 20 Circle Time Songs ⭕️ | Kids Classroom Favorites | Super Simple's 20th Anniversary!", "ch": "Super Simple Songs", "cat": "songs"}, {"id": "iHP8FGwzjJg", "t": "🎉 Everybody Celebrate 🎉 | Best Celebration Song for Kids | 20 Years of Super Simple Songs!", "ch": "Super Simple Songs", "cat": "songs"}, {"id": "LLgTFZP3IQQ", "t": "Top 20 Back To School Songs | 🍎 📚 Learn and Sing ABCs + More! | Super Simple’s 20th Anniversary!", "ch": "Super Simple Songs", "cat": "songs"}, {"id": "YaFSwBg1qvg", "t": "Put on Your Shoes | Featuring Tobee and the Super Simple Puppets! | Super Simple Songs", "ch": "Super Simple Songs", "cat": "songs"}, {"id": "BG8HLIvuK24", "t": "Top 20 Counting Songs | Numbers Practice for Preschool + Up | 20th Anniversary of Super Simple Songs", "ch": "Super Simple Songs", "cat": "songs"}, {"id": "-HOQGg7uuQQ", "t": "Counting Up To 20 | Sea Animals Kids Math Song with @NoodleAndPals | Super Simple Songs", "ch": "Super Simple Songs", "cat": "songs"}, {"id": "jZnBNf0GJyU", "t": "Top 20 Book Songs 📚 | Super Simple’s 20th Anniversary! | Let's Read!", "ch": "Super Simple Songs", "cat": "songs"}, {"id": "wtX9hMdLuew", "t": "I'm Going On A Trip | 🗺️ 🎒 Pack your bag for your adventure! | Super Simple Songs", "ch": "Super Simple Songs", "cat": "songs"}, {"id": "q1DinydBRNE", "t": "Top 20 Summer Songs 🌞 | Best of Super Simple Hits of 2026!", "ch": "Super Simple Songs", "cat": "songs"}, {"id": "hDqWTltrGJ8", "t": "Shapes I See At The Beach 🏖️ | Oval, Star, Rectangle | Super Simple Songs", "ch": "Super Simple Songs", "cat": "songs"}, {"id": "N8gOM-A3cUw", "t": "Top 20 Active Songs! | Super Simple’s 20th Anniversary! | Let's Move!", "ch": "Super Simple Songs", "cat": "songs"}, {"id": "6i-a4YKLH-0", "t": "Blippi Spells C-A-N-D-Y to Beat the Escape Room! 🍬", "ch": "Blippi", "cat": "science"}, {"id": "rM4MkqQDXg4", "t": "Blippi’s Pumpkin Carving & Corn Maze Fun! 🎃", "ch": "Blippi", "cat": "science"}, {"id": "G_yyQ1_RgUQ", "t": "Blippi Wonderful World Tour Dance & Sing-Along! 🎶", "ch": "Blippi", "cat": "science"}, {"id": "rFo6JBt-X7E", "t": "Blippi Fire Truck Ball Pit Adventure! 🚒", "ch": "Blippi", "cat": "science"}, {"id": "C_HnznKaAF4", "t": "Blippi & Shawn Johnson Get Up & Move! 🏃", "ch": "Blippi", "cat": "science"}, {"id": "1075JerYmoo", "t": "Blippi Meets a T-Rex at Dinotropolis! 🦖", "ch": "Blippi", "cat": "science"}, {"id": "XzH3SrUEbMk", "t": "Blippi & Meekah’s NASCAR Balloon Race! 🏎️", "ch": "Blippi", "cat": "science"}, {"id": "xFF---x1VPo", "t": "Blippi & Meekah Underwater Hide and Seek! 🦀", "ch": "Blippi", "cat": "science"}, {"id": "YgQkbTmrB0M", "t": "Blippi x Doggyland Ice Cream Truck Song 🍧", "ch": "Blippi", "cat": "science"}, {"id": "GuFtlcLbM5g", "t": "Blippi Goes to School 🏫 Freeze Dance & Shaving Cream Fun!", "ch": "Blippi", "cat": "science"}, {"id": "66h7CEh7VIc", "t": "Blippi Learns Pool Safety & How to Swim! 🌊🏊‍♂️", "ch": "Blippi", "cat": "science"}, {"id": "ebBH6umnDPE", "t": "“Burning ENERGY!” ⚡️ Don’t-Stop-Moving Challenge | Danny Go! Dance Songs for Kids", "ch": "Danny Go!", "cat": "songs"}, {"id": "vM834FZYNro", "t": "Robots, Magnets, Planets + MORE! 🤖🧲💎 | STEM Dance Compilation | Danny Go! Songs for Kids", "ch": "Danny Go!", "cat": "songs"}, {"id": "_9eKO1X3HoA", "t": "“The BRAVEST Knight!” ⚔️🔥 Medieval Dragon Adventure | Danny Go! Dance Songs for Kids", "ch": "Danny Go!", "cat": "songs"}, {"id": "K10fO0eLklc", "t": "Packages, Magnets, Superheroes + MORE! 📦🧲🦸‍♂️ | Dance Compilation | Danny Go! Songs for Kids", "ch": "Danny Go!", "cat": "songs"}, {"id": "SzFSFz5tBv8", "t": "“Magnet MANIA!” 🧲⚡️STEM Brain Break | Danny Go! Dance Songs for Kids", "ch": "Danny Go!", "cat": "songs"}, {"id": "aQJ35RhvHF0", "t": "“Package POP!” 📦💥 Mystery Box Surprise Dance | Danny Go! Songs for Kids", "ch": "Danny Go!", "cat": "songs"}, {"id": "mKgl1CiA9Qk", "t": "Ka-Pow! 2: Attack of the Gravity Goldfish! 💥 Superhero Adventure | Danny Go! Dance Songs for Kids", "ch": "Danny Go!", "cat": "songs"}, {"id": "Zm83TxM3aJs", "t": "Planes, Trains, Race Cars + More! ✈️🚂🚔 | Vehicle Dance Compilation | Danny Go! Songs for Kids", "ch": "Danny Go!", "cat": "songs"}, {"id": "sH49rggJwFc", "t": "\"Airplane Mode!\" Flying Dance ✈️ 🚁 Jets, Helicopters + More | Danny Go! Songs for Kids", "ch": "Danny Go!", "cat": "songs"}, {"id": "PGTUa8V6Fv0", "t": "Flamingos, Pizza, Spiders + More! 🦩🍕🕷️ | Adventure Compilation | Danny Go! Songs for Kids", "ch": "Danny Go!", "cat": "songs"}, {"id": "3kkRIIRDm0k", "t": "The IMPOSSIBLE Challenge! 🏆 Mini-Games Adventure | Danny Go! Dance Songs for Kids", "ch": "Danny Go!", "cat": "songs"}, {"id": "vXIz152zx6E", "t": "Wiggle, Bounce, and Shake! 💥 | Dance Compilation | Danny Go! Songs for Kids", "ch": "Danny Go!", "cat": "songs"}, {"id": "R7OxutH5AZY", "t": "\"Flamingo FRENZY!\" Dance Game 🦩🌴 Red Light, Green Light Brain Break | Danny Go! Songs for Kids", "ch": "Danny Go!", "cat": "songs"}, {"id": "m9Ls8oYvk8g", "t": "Colors, Animals, Lava + More 🌈🐒🔥 | Dance Game Compilation | Danny Go! Songs for Kids", "ch": "Danny Go!", "cat": "songs"}, {"id": "kCk92M0HMqU", "t": "The Beautiful Garden of Eden | Superbook - In The Beginning English Clip", "ch": "Superbook", "cat": "bible"}, {"id": "mc0JmNUcqWI", "t": "Focus On What God Has Told You to Do | Superbook - Nehemiah English Clip", "ch": "Superbook", "cat": "bible"}, {"id": "x19UYUaJ0rs", "t": "The Story of Creation | Superbook - In The Beginning English Clip", "ch": "Superbook", "cat": "bible"}, {"id": "tNAySuLjQuE", "t": "Superbook - Roar - Season 1 Episode 7 - Full Episode Premiere", "ch": "Superbook", "cat": "bible"}, {"id": "26vi-UsyYFk", "t": "Nicodemus Met Jesus | Superbook - Nicodemus English Clip", "ch": "Superbook", "cat": "bible"}, {"id": "3pH5GIr83XQ", "t": "God Was With Daniel Inside the Lion’s Den | Superbook - Roar English Clip", "ch": "Superbook", "cat": "bible"}, {"id": "cXR3ol0hUSY", "t": "Superbook - David & Saul - Season 3 Episode 7 - Full Episode (Official HD Version)", "ch": "Superbook", "cat": "bible"}, {"id": "7nCutwbZ4nw", "t": "Thomas Finally Saw Jesus! | Superbook - Doubting Thomas English Clip", "ch": "Superbook", "cat": "bible"}, {"id": "PrpgO5oaHm0", "t": "Daniel Never Stopped Praying to God | Superbook - Roar English Clip", "ch": "Superbook", "cat": "bible"}, {"id": "_bBR6x4NYCM", "t": "We Have a Promise-keeping God! | Superbook - Noah and the Ark English Clip", "ch": "Superbook", "cat": "bible"}, {"id": "1SIJsRQaZz8", "t": "King Darius Admires Daniel | Superbook - Roar English Clip", "ch": "Superbook", "cat": "bible"}, {"id": "lTEfyBaXR6o", "t": "Superbook - Revelation: The Final Battle! - Season 1 Episode 13 - Full Episode Premiere", "ch": "Superbook", "cat": "bible"}, {"id": "YHh6UmE2Uus", "t": "Jeremiah Remained Hopeful in God | Superbook - Jeremiah English Clip", "ch": "Superbook", "cat": "bible"}, {"id": "uyPWmjpYz18", "t": "Superbook - Jacob & Esau - Season 1 Episode 3 - Full Episode (Official HD Version)", "ch": "Superbook", "cat": "bible"}, {"id": "bu2lzSWyT64", "t": "God Can Make All Things New | Superbook - Revelation: The Final Battle! English Clip", "ch": "Superbook", "cat": "bible"}];
+const CATS={math:{n:'Numbers & Math',i:'🔢',c:'#ff9f43'},letters:{n:'Letters & Reading',i:'🔤',c:'#6c5ce7'},songs:{n:'Songs',i:'🎵',c:'#fd79a8'},science:{n:'Science & How Things Work',i:'🔬',c:'#00b894'},bible:{n:'Bible Stories',i:'✝️',c:'#0984e3'}};
+const LS=k=>JSON.parse(localStorage.getItem('kv_'+k)||'null'),SS=(k,v)=>localStorage.setItem('kv_'+k,JSON.stringify(v));
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+let vids=LS('vids')||SEED; let pinCode=LS('pin')||'1234'; let limit=LS('limit')||0;
+let prog=LS('prog')||{done:{},quiz:[],watched:[],minutes:{},stars:0};
+const save=()=>{SS('vids',vids);SS('prog',prog)};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const short=t=>t.split('|')[0].trim();
+// ---- Lessons ----
+const Q=[['count',3,'⭐'],['letter','A'],['color','red'],['count',4,'🍎'],['letter','B'],['shape','circle'],['count',5,'🐟'],['letter','C'],['color','blue'],['count',6,'🎈'],['letter','D'],['shape','triangle'],['count',7,'🦋'],['letter','E'],['color','green'],['count',8,'🌟'],['letter','F'],['shape','square'],['count',9,'🐞'],['letter','G']];
+const TOP=[['math','letters'],['letters','songs'],['science','math'],['bible','songs'],['math','science']];
+const COL=['#ff9f43','#6c5ce7','#fd79a8','#00b894','#0984e3','#e17055'];
+function lessons(){const by={};vids.forEach(v=>(by[v.cat]=by[v.cat]||[]).push(v));const ptr={};const L=[];
+ for(let i=0;i<Q.length;i++){const vs=[];for(const c of TOP[i%TOP.length]){const a=by[c]||[];const p=ptr[c]||0;if(a.length){vs.push(a[p%a.length]);ptr[c]=p+1}}
+  const q=Q[i];const name=q[0]=='count'?'Count to '+q[1]:q[0]=='letter'?'Letter '+q[1]:q[0]=='color'?'Color '+q[1]:q[1][0].toUpperCase()+q[1].slice(1)+'s';
+  L.push({id:'L'+(i+1),n:i+1,name,icon:q[0]=='count'?q[2]:q[0]=='letter'?q[1]:q[0]=='color'?'🎨':'🔷',vids:vs.map(v=>v.id),q});}
+ return L}
+// ---- UI ----
+let tab='path';
+function show(t){tab=t;document.getElementById('tPath').classList.toggle('on',t=='path');document.getElementById('tFree').classList.toggle('on',t=='free');render()}
+function render(){document.getElementById('starCount').textContent=prog.stars;const m=document.getElementById('main');
+ if(tab=='free'){m.innerHTML=Object.entries(CATS).map(([k,c])=>{const a=vids.filter(v=>v.cat==k);if(!a.length)return'';
+  return `<section class="cat"><h2><span>${c.i}</span>${c.n}</h2><div class="row">${a.map(v=>`<div class="tile" style="--c:${c.c}" onclick="play('${v.id}')"><img loading="lazy" src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt=""><p>${esc(short(v.t))}</p></div>`).join('')}</div></section>`}).join('');return}
+ const L=lessons();let cur=L.findIndex(l=>!prog.done[l.id]);if(cur<0)cur=L.length;
+ m.innerHTML=`<p style="text-align:center;font-size:24px;margin:4px">🦉 Tap the glowing circle to learn!</p><div class="path">`+L.map((l,i)=>{const d=prog.done[l.id],lock=i>cur;
+  return `<button class="lvl ${lock?'lock':''} ${i==cur?'cur':''}" style="background:${COL[i%COL.length]}" ${lock?'':`onclick="startLesson(${i})"`}><b>${lock?'🔒':d?'⭐':l.icon}</b>Level ${l.n}<small>${esc(l.name)}</small></button>`}).join('')+'</div>'}
+// ---- Screen time ----
+function used(){return prog.minutes[today()]||0}
+function overLimit(){return limit>0&&used()>=limit}
+function checkLimit(){if(overLimit()){closePlayer(true);document.getElementById('done').style.display='flex';return true}return false}
+setInterval(()=>{if(playing&&document.visibilityState=='visible'){const d=today();prog.minutes[d]=(prog.minutes[d]||0)+1/12;save();checkLimit()}},5000);
+// ---- Player ----
+let ytApi=false,player=null,playing=false,queue=[],lessonIdx=null;
+const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';document.head.appendChild(s);
+window.onYouTubeIframeAPIReady=()=>ytApi=true;
+function play(id,q){if(checkLimit())return;queue=q||[];const v=vids.find(x=>x.id==id)||{t:''};
+ document.getElementById('ptitle').textContent=short(v.t);document.getElementById('player').style.display='flex';playing=true;
+ prog.watched.unshift({id,t:short(v.t),at:new Date().toISOString()});prog.watched=prog.watched.slice(0,300);save();
+ const pv={rel:0,modestbranding:1,playsinline:1,fs:1,iv_load_policy:3,controls:1,autoplay:1,disablekb:0};
+ if(ytApi){document.getElementById('yt').outerHTML='<div id="yt"></div>';player=new YT.Player('yt',{host:'https://www.youtube-nocookie.com',videoId:id,playerVars:pv,events:{onStateChange:e=>{if(e.data===YT.PlayerState.ENDED)next()}}})}
+ else{document.getElementById('yt').outerHTML=`<iframe id="yt" allow="autoplay; fullscreen" allowfullscreen src="https://www.youtube-nocookie.com/embed/${id}?${new URLSearchParams(pv)}"></iframe>`}}
+function next(){if(queue.length){play(queue.shift(),queue)}else{const li=lessonIdx;closePlayer();if(li!=null)quiz(li)}}
+function closePlayer(silent){playing=false;try{player&&player.destroy()}catch(e){}player=null;document.getElementById('yt').outerHTML='<div id="yt"></div>';document.getElementById('player').style.display='none';if(!silent&&queue.length===0){}render()}
+function startLesson(i){const l=lessons()[i];lessonIdx=i;if(!l.vids.length)return quiz(i);const v=[...l.vids];play(v.shift(),v);
+ // Back during a lesson: offer quiz after watching at least one
+ }
+document.querySelector('#player .big').onclick=()=>{const li=lessonIdx;queue=[];closePlayer();if(li!=null)quiz(li)};
+// ---- Quiz ----
+const COLORS={red:'#e74c3c',blue:'#3498db',green:'#2ecc71',yellow:'#f1c40f',purple:'#9b59b6'};
+const SHAPES={circle:'⚫',triangle:'🔺',square:'🟦',star:'⭐'};
+function shuffle(a){return a.sort(()=>Math.random()-.5)}
+function quiz(i){lessonIdx=null;const l=lessons()[i],q=l.q;let prompt,opts,ans;
+ if(q[0]=='count'){ans=q[1];prompt=`How many ${q[2]}?<div style="font-size:54px;max-width:600px;margin:10px auto">${q[2].repeat(ans)}</div>`;opts=shuffle([ans,ans-1,ans+1+(ans>3?1:0)]).map(n=>[n,n])}
+ else if(q[0]=='letter'){ans=q[1];prompt=`Which one is the letter ${ans}?`;const o=shuffle('ABCDEFGHIJ'.split('').filter(c=>c!=ans)).slice(0,2);opts=shuffle([ans,...o]).map(c=>[c,c])}
+ else if(q[0]=='color'){ans=q[1];prompt=`Which one is ${ans}?`;const o=shuffle(Object.keys(COLORS).filter(c=>c!=ans)).slice(0,2);opts=shuffle([ans,...o]).map(c=>[c,`<span style="display:inline-block;width:100px;height:100px;border-radius:50%;background:${COLORS[c]}"></span>`])}
+ else{ans=q[1];prompt=`Which one is a ${ans}?`;const o=shuffle(Object.keys(SHAPES).filter(c=>c!=ans)).slice(0,2);opts=shuffle([ans,...o]).map(c=>[c,SHAPES[c]])}
+ const el=document.getElementById('quiz');let tries=0;
+ el.innerHTML=`<div style="font-size:70px">🦉</div><h2>${prompt}</h2><div class="choices">${opts.map(o=>`<button class="choice" data-v="${o[0]}">${o[1]}</button>`).join('')}</div><br><button class="big" style="background:#ddd;box-shadow:0 5px 0 #aaa" onclick="hide('quiz')">⬅ Back</button>`;
+ el.style.display='flex';
+ el.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{tries++;if(b.dataset.v==String(ans)){prog.quiz.push({lesson:l.id,name:l.name,tries,at:new Date().toISOString()});const first=!prog.done[l.id];prog.done[l.id]=today();if(first)prog.stars+=tries==1?3:2;save();celebrate(first?(tries==1?3:2):0)}else{b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),400)}})}
+function celebrate(n){const el=document.getElementById('quiz');el.innerHTML=`<div style="font-size:120px">🎉🦉🎉</div><h2>Great job!</h2><p style="font-size:34px">${n?'You earned '+'⭐'.repeat(n):'You did it again! ⭐'}</p><button class="big" onclick="hide('quiz');render()">Yay! ➡</button>`;
+ for(let k=0;k<40;k++){const c=document.createElement('div');c.className='confetti';c.textContent=['⭐','🎈','🎉','✨','🌟'][k%5];c.style.left=Math.random()*100+'vw';c.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),3200)}}
+function hide(id){document.getElementById(id).style.display='none'}
+// ---- PIN ----
+let pinBuf='';
+function askPin(){pinBuf='';document.getElementById('pinDots').textContent='';document.getElementById('pin').style.display='flex'}
+document.getElementById('pinpad').innerHTML=[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>k===''?'<span></span>':`<button onclick="pk('${k}')">${k}</button>`).join('');
+function pk(k){if(k=='⌫')pinBuf=pinBuf.slice(0,-1);else pinBuf+=k;document.getElementById('pinDots').textContent='●'.repeat(pinBuf.length);
+ if(pinBuf.length==4){if(pinBuf==pinCode){hide('pin');openParent()}else{document.getElementById('pinDots').textContent='❌';pinBuf=''}}}
+// ---- Parent ----
+function parseId(u){u=u.trim();let m=u.match(/(?:v=|youtu\.be\/|embed\/|shorts\/|live\/)([A-Za-z0-9_-]{11})/);if(m)return m[1];if(/^[A-Za-z0-9_-]{11}$/.test(u))return u;return null}
+function openParent(){const p=document.getElementById('parent');p.style.display='block';const L=lessons();const doneN=L.filter(l=>prog.done[l.id]).length;
+ const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');days.push([k,prog.minutes[k]||0])}
+ const mx=Math.max(10,...days.map(d=>d[1]));const chans=[...new Set(vids.map(v=>v.ch))];
+ p.innerHTML=`<div style="display:flex;align-items:center"><h1 style="margin:0;color:#6c5ce7">👨‍👩‍👦 Parent Dashboard</h1><button class="pbtn" style="margin-left:auto;font-size:20px" onclick="closeParent()">✖ Close</button></div>
+ <h2>📊 Progress</h2><div class="card"><div class="grid2"><div class="stat"><b>${Math.min(doneN+1,L.length)}</b>Current level</div><div class="stat"><b>${doneN}/${L.length}</b>Lessons done</div><div class="stat"><b>${prog.stars}</b>Stars</div><div class="stat"><b>${prog.watched.length}</b>Videos watched</div><div class="stat"><b>${Math.round(used())}</b>Minutes today</div></div>
+ <h3>Minutes watched (last 7 days)</h3><div class="chart">${days.map(d=>`<div style="height:${d[1]/mx*100}%"><em>${Math.round(d[1])}</em><i>${d[0].slice(5)}</i></div>`).join('')}</div><br>
+ <h3>Quiz results</h3><table><tr><th>Lesson</th><th>Tries</th><th>When</th></tr>${prog.quiz.slice(-15).reverse().map(q=>`<tr><td>${esc(q.name)}</td><td>${q.tries==1?'✅ first try':q.tries+' tries'}</td><td>${new Date(q.at).toLocaleString()}</td></tr>`).join('')||'<tr><td colspan=3>No quizzes yet</td></tr>'}</table>
+ <h3>Recently watched</h3><table><tr><th>Video</th><th>When</th></tr>${prog.watched.slice(0,20).map(w=>`<tr><td>${esc(w.t)}</td><td>${new Date(w.at).toLocaleString()}</td></tr>`).join('')||'<tr><td colspan=2>Nothing yet</td></tr>'}</table><br>
+ <button class="pbtn" onclick="exportProg()">⬇ Export progress (JSON)</button><button class="pbtn red" onclick="if(confirm('Reset all progress?')){prog={done:{},quiz:[],watched:[],minutes:{},stars:0};save();openParent()}">Reset progress</button></div>
+ <h2>⏱️ Daily screen time</h2><div class="card">Limit (minutes, 0 = no limit): <input id="lim" type="number" min="0" value="${limit}" style="width:90px"> <button class="pbtn" onclick="limit=+lim.value||0;SS('limit',limit);hide('done');alert('Saved')">Save</button> <button class="pbtn gray" onclick="prog.minutes[today()]=0;save();hide('done');openParent()">Reset today's time</button></div>
+ <h2>➕ Add a video</h2><div class="card"><input id="addUrl" placeholder="Paste YouTube link" style="width:min(420px,100%)"> <select id="addCat" style="font-size:16px;padding:8px">${Object.entries(CATS).map(([k,c])=>`<option value="${k}">${c.n}</option>`).join('')}</select> <input id="addT" placeholder="Title (optional)"> <button class="pbtn" onclick="addVid()">Add</button></div>
+ <h2>📺 Channels</h2><div class="card">${chans.map(c=>`<div class="vl"><span><b>${esc(c)}</b> (${vids.filter(v=>v.ch==c).length} videos)</span><button class="pbtn red" onclick="if(confirm('Remove all ${esc(c).replace(/'/g,'')} videos?')){vids=vids.filter(v=>v.ch!==${esc(JSON.stringify(c))});save();openParent()}">Remove channel</button></div>`).join('')}
+ <button class="pbtn gray" onclick="if(confirm('Restore original video list?')){vids=SEED;save();openParent()}">Restore default list</button></div>
+ <h2>🎬 Videos</h2><div class="card">${vids.map(v=>`<div class="vl"><img src="https://i.ytimg.com/vi/${v.id}/default.jpg"><span>${esc(short(v.t))}<br><small>${esc(v.ch)} · ${CATS[v.cat].n}</small></span><button class="pbtn red" onclick="vids=vids.filter(x=>x.id!='${v.id}');save();openParent()">Remove</button></div>`).join('')}</div>
+ <h2>🔑 Change PIN</h2><div class="card"><input id="np" maxlength="4" inputmode="numeric" placeholder="New 4-digit PIN"> <button class="pbtn" onclick="if(/^\\d{4}$/.test(np.value)){pinCode=np.value;SS('pin',pinCode);alert('PIN changed')}else alert('Use 4 digits')">Save PIN</button></div>`}
+function addVid(){const id=parseId(addUrl.value);if(!id)return alert('Could not find a video ID in that link');if(vids.some(v=>v.id==id))return alert('Already added');vids.push({id,t:addT.value||'Added video',ch:'Added by parent',cat:addCat.value});save();openParent()}
+function exportProg(){const b=new Blob([JSON.stringify({exported:new Date().toISOString(),progress:prog,limit},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='learning-progress-'+today()+'.json';a.click()}
+function closeParent(){hide('parent');render()}
+document.addEventListener('contextmenu',e=>e.preventDefault());
+if(location.protocol=='file:')fileWarn.style.display='block';
+if(!checkLimit())render();
+</script></body></html>
