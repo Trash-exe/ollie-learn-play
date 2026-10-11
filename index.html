@@ -1,9 +1,12 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="theme-color" content="#6c5ce7"><link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Learn &amp; Play">
+<link rel="apple-touch-icon" href="icons/icon-180.png"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <title>Cyrus's Learn & Play</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:Fredoka,'Baloo 2','Comic Sans MS',system-ui,sans-serif;background:linear-gradient(160deg,#fff6d6,#ffe0f0 50%,#d9f2ff);min-height:100vh;color:#33325a;user-select:none}
+html{background:#fff6d6}body{margin:0;padding-top:env(safe-area-inset-top);font-family:Fredoka,'Baloo 2','Comic Sans MS',system-ui,sans-serif;background:linear-gradient(160deg,#fff6d6,#ffe0f0 50%,#d9f2ff);min-height:100vh;color:#33325a;user-select:none}
 header{display:flex;align-items:center;gap:12px;padding:14px 20px}
 header h1{margin:0;font-size:34px;color:#ff6b6b;text-shadow:2px 2px 0 #ffd93d}
 .mascot{font-size:52px;animation:bob 2s ease-in-out infinite}
@@ -59,7 +62,8 @@ table{width:100%;border-collapse:collapse}td,th{padding:5px;border-bottom:1px so
 </style></head><body>
 <header><div class="mascot">🦉</div><h1>Cyrus's Learn & Play</h1><div class="stars">⭐ <span id="starCount">0</span></div><button class="gear" onclick="askPin()" aria-label="Parents">⚙️ Parents</button></header>
 <div class="tabs"><button class="tab on" id="tPath" onclick="show('path')">🗺️ Learning Path</button><button class="tab" id="tFree" onclick="show('free')">🎈 Free Play</button></div>
-<div id="fileWarn" style="display:none;margin:0 20px;background:#fff3cd;border-radius:14px;padding:10px 16px;font-size:16px">⚠️ Grown-ups: YouTube blocks videos when this file is opened directly (file://). Host it on a web address (e.g. GitHub Pages, Netlify Drop) or run a local server so videos play.</div><main id="main"></main>
+<div id="fileWarn" style="display:none;margin:0 20px;background:#fff3cd;border-radius:14px;padding:10px 16px;font-size:16px">⚠️ Grown-ups: YouTube blocks videos when this file is opened directly (file://). Host it on a web address (e.g. GitHub Pages, Netlify Drop) or run a local server so videos play.</div><div id="iosTip" style="display:none;margin:0 20px 8px;background:#fff;border:3px dashed #6c5ce7;border-radius:16px;padding:10px 16px;font-size:16px">👋 <b>Grown-ups:</b> install me as an app! Tap <b>Share</b> <span style="font-size:20px">⬆️</span> then <b>“Add to Home Screen”</b>. <button class="pbtn" onclick="SS('iosTipDone',1);iosTip.style.display='none'">Got it</button></div>
+<main id="main"></main>
 
 <div id="player"><div class="bar"><button class="big" onclick="closePlayer()">⬅ Back</button><div id="ptitle" style="color:#fff;font-size:20px;flex:1"></div></div>
 <div id="pwrap"><div id="yt"></div><div class="shield"></div><div class="shield br"></div><div class="shield bl"></div></div></div>
@@ -209,7 +213,7 @@ function parseId(u){u=u.trim();let m=u.match(/(?:v=|youtu\.be\/|embed\/|shorts\/
 function openParent(){const p=document.getElementById('parent');p.style.display='block';const L=lessons();const doneN=L.filter(l=>prog.done[l.id]).length;
  const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');days.push([k,prog.minutes[k]||0])}
  const mx=Math.max(10,...days.map(d=>d[1]));const chans=[...new Set(vids.map(v=>v.ch))];
- p.innerHTML=`<div style="display:flex;align-items:center"><h1 style="margin:0;color:#6c5ce7">👨‍👩‍👦 Parent Dashboard</h1><button class="pbtn" style="margin-left:auto;font-size:20px" onclick="closeParent()">✖ Close</button></div>
+ p.innerHTML=`<div style="display:flex;align-items:center"><h1 style="margin:0;color:#6c5ce7">👨‍👩‍👦 Parent Dashboard</h1><button class="pbtn" style="margin-left:auto;font-size:18px" onclick="doInstall()">📲 Install app</button><button class="pbtn" style="font-size:20px" onclick="closeParent()">✖ Close</button></div>
  <h2>📊 Progress</h2><div class="card"><div class="grid2"><div class="stat"><b>${Math.min(doneN+1,L.length)}</b>Current level</div><div class="stat"><b>${doneN}/${L.length}</b>Lessons done</div><div class="stat"><b>${prog.stars}</b>Stars</div><div class="stat"><b>${prog.watched.length}</b>Videos watched</div><div class="stat"><b>${Math.round(used())}</b>Minutes today</div></div>
  <h3>Minutes watched (last 7 days)</h3><div class="chart">${days.map(d=>`<div style="height:${d[1]/mx*100}%"><em>${Math.round(d[1])}</em><i>${d[0].slice(5)}</i></div>`).join('')}</div><br>
  <h3>Quiz results</h3><table><tr><th>Lesson</th><th>Tries</th><th>When</th></tr>${prog.quiz.slice(-15).reverse().map(q=>`<tr><td>${esc(q.name)}</td><td>${q.tries==1?'✅ first try':q.tries+' tries'}</td><td>${new Date(q.at).toLocaleString()}</td></tr>`).join('')||'<tr><td colspan=3>No quizzes yet</td></tr>'}</table>
@@ -239,5 +243,10 @@ function exportProg(){const b=new Blob([JSON.stringify({exported:new Date().toIS
 function closeParent(){hide('parent');render();checkLimit()}
 document.addEventListener('contextmenu',e=>e.preventDefault());
 if(location.protocol=='file:')fileWarn.style.display='block';
+const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1)){if(!standalone&&!LS('iosTipDone'))iosTip.style.display='block'}
+let deferredInstall=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e});addEventListener('appinstalled',()=>{deferredInstall=null});
+function doInstall(){if(!deferredInstall)return alert(standalone?'Already installed as an app.':'To install: use your browser menu → "Install app" / "Add to Home Screen".');deferredInstall.prompt();deferredInstall.userChoice.finally(()=>{deferredInstall=null;openParent()})}
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').then(r=>r.update()).catch(()=>{});
 if(!checkLimit()){render();dailyMsg()}
 </script></body></html>
