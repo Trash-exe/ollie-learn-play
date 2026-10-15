@@ -1,4 +1,4 @@
-const VERSION='20261014054106';const SHELL='shell-'+VERSION,AUDIO='audio-v1';
+const VERSION='20261015054333';const SHELL='shell-'+VERSION,AUDIO='audio-v1';
 const PRE=['./','index.html','manifest.webmanifest','icons/icon-180.png','icons/icon-192.png','icons/icon-512.png','icons/icon-maskable-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(SHELL).then(c=>c.addAll(PRE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==SHELL&&k!==AUDIO).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
